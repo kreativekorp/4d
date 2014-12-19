@@ -1,0 +1,113 @@
+$ANALOG	Numeric - Normal
+$DIGITAL	Numeric - 7-Segmt
+$EASTERN	Pipped - Eastern
+$FUDGE1	FUDGE - F.1
+$FUDGE2	FUDGE - F.2
+$FUDGE3	FUDGE - F.3
+$LOOSE	Loose
+$PIMERIC	Numeric - Pipped
+$ROMAN	Numeric - Roman
+$TIGHT	Tight
+$WESTERN	Pipped - Western
+01D04	1d4
+01D06	1d6
+01D08	1d8
+01D10	1d10
+01D100	1d100
+01D100Z	1d100Z
+01D10Z	1d10Z
+01D12	1d12
+01D16	1d16
+01D20	1d20
+01D24	1d24
+01D30	1d30
+02D06	2d6
+03D06	3d6
+03D34	3d34
+04D06	4d6
+04DF1	4dF.1
+04DF2	4dF.2
+04DF3	4dF.3
+05D06	5d6
+ALPHABET	Alphabet
+ASTRODCE	AstroDice
+BACKGMN6	Backgammon - 6
+BACKGMN8	Backgammon - 8
+BOGGLE4C	Boggle Classic
+BOGGLE4R	Boggle Revised
+BOGGLE5B	Big Boggle
+BOGGLE5D	Boggle Deluxe
+BOGGLEHH	Boggle Hunt-Hill
+BOWLING	Bowling
+CARDRANK	Card Ranks
+CARDS	Cards
+CARDSUIT	Card Suits
+CHESS	Chess
+COINFLIP	Coin Flip
+COLORRGB	Colors - RGB
+COLORRYB	Colors - RYB
+COLORS08	Colors - 8
+COLORS10	Colors - 10
+COLORS12	Colors - 12
+COMPASS2	Compass - 2
+COMPASS4	Compass - 4
+COMPASS8	Compass - 8
+COMPSS16	Compass - 16
+CRANIUM	Cranium
+CRN&ANCR	Crown & Anchor
+DREIDELA	Dreidel (Shin)
+DREIDELB	Dreidel (Pei)
+GREEK	Greek
+HEBREW	Hebrew
+HOTELS	Hotels
+ICHING2	I-Ching - 2
+ICHING4	I-Ching - 4
+ICHING8	I-Ching - 8
+LCR	LCR
+MAGIC8BL	Magic 8-Ball
+MAHJ2D6	Mahjong 2d6
+MAHJBAM	Mahjong Bams
+MAHJCRAK	Mahjong Craks
+MAHJDOT	Mahjong Dots
+MAHJSUIT	Mahjong Suits
+MAHJTILE	Mahjong Tiles
+MAHJWIND	Mahjong Winds
+MATH04	Math + - * /
+MATH06A	Math + - * / < =
+MATH06B	Math + - * / < <=
+MATH06CN	Math 0 1 i e pi
+MATH06EQ	Math < > = <= >=
+MATH06OP	Math + - * / ^ %
+MATH12	Math 12
+MATHDICE	MathDice
+MATHDIJR	MathDice Jr.
+MONOPOLY	Monopoly
+MONTHS	Months
+PLANETSA	Planets + Nodes
+PLANETSB	Planets + Comet
+POKER6	Poker - 6
+POKER8	Poker - 8
+PTOLEM20	Ptolemaic d20
+PUT&TAKE	Put & Take
+PUT&TNUM	Put & Take Number
+RADIAL	Radial
+RPS03	RPS Standard
+RPS04DYN	RPS Dynamite
+RPS04PEN	RPS Pencil
+RPS04WEL	RPS Well
+RPS05AT	RPS Airsp Tntcls
+RPS05SL	RPS Spock Lizard
+RPS05UPA	RPS UPA
+SCATTERG	Scattergories
+SPINNER2	Spinner - 2
+SPINNER3	Spinner - 3
+SPINNER4	Spinner - 4
+SPINNER6	Spinner - 6
+SPINNER8	Spinner - 8
+SPINNR12	Spinner - 12
+SPINNR16	Spinner - 16
+WEEKDAYS	Weekdays
+YAHTZEE	Yahtzee
+YESNO	Yes/No
+YESNOMAY	Yes/No/Maybe
+ZODIAC	Zodiac

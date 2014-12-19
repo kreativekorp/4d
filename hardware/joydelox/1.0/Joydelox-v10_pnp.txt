@@ -1,0 +1,53 @@
+*Pick And Place List
+*Company=
+*Author=
+*eMail=
+*
+*Project=Joydelox-v10
+*Date=19:34:55
+*CreatedBy=Fritzing 0.9.0b.06.11.da4e
+*
+*
+*Coordinates in mm, always center of component
+*Origin 0/0=Lower left corner of PCB
+*Rotation in degree (0-360, math. pos.)
+*
+*No;Value;Package;X;Y;Rotation;Side;Name
+1;;[THT];15.5306;-33.8084;0;Bottom;S1
+2;;;20.5841;-0.400629;0;Bottom;TXT1
+3;;;24.0205;-33.8915;0;Bottom;IMG1
+4;;;28.9924;-1.99998;0;Bottom;Hole4
+5;;[THT];15.5306;-15.4801;180;Bottom;S3
+6;4.7k;THT;9.99236;-13.92;90;Bottom;R6
+7;;THT;15.522;-3.45813;-90;Bottom;J1
+8;22k;THT;3.99235;-13.92;90;Bottom;R1
+9;;;23.7221;-38.6385;0;Bottom;TXT5
+10;;;15.4627;-40;0;Bottom;Hole5
+11;;[THT];24.6595;-24.6345;0;Bottom;S4
+12;;;15.5146;-6.37556;0;Bottom;TXT1
+13;3V;;1.99235;-35.27;180;Bottom;VCC1
+14;;;3.94346;-31.4994;0;Bottom;TXT3
+15;;;15.5414;-23.1454;0;Bottom;TXT7
+16;2.2k;THT;23.9924;-13.92;90;Bottom;R4
+17;;THT;22.4524;-41;-90;Bottom;S7
+18;;THT;1.99235;-9.19006;90;Bottom;S6
+19;;;1.99235;-41;0;Bottom;Hole1
+20;;;15.5251;-0.400629;0;Bottom;TXT1
+21;;;18.0296;-6.37556;0;Bottom;TXT1
+22;;;12.9746;-6.37556;0;Bottom;TXT1
+23;1.2k;THT;20.9923;-13.92;90;Bottom;R5
+24;10k;THT;6.99235;-13.92;90;Bottom;R2
+25;;;4.90819;-6.20161;0;Bottom;TXT5
+26;;;3.94346;-38.4139;0;Bottom;TXT2
+27;;;1.99235;-1.99998;0;Bottom;Hole3
+28;;;10.4241;-6.37556;0;Bottom;TXT1
+29;;;18.0143;-0.400629;0;Bottom;TXT1
+30;;;15.4567;-29.0314;0;Bottom;TXT4
+31;;[THT];15.5306;-24.6212;0;Bottom;S5
+32;;;10.4442;-0.410506;0;Bottom;TXT1
+33;;;20.63;-6.37556;0;Bottom;TXT1
+34;;;12.9746;-0.400629;0;Bottom;TXT1
+35;;;28.9924;-41;0;Bottom;Hole2
+36;;[THT];6.38952;-24.609;0;Bottom;S2
+37;4.7k;THT;26.9924;-13.92;90;Bottom;R3
+38;;;30.0868;-24.6089;-90;Bottom;TXT6

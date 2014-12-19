@@ -1,0 +1,107 @@
+#platform "GOLDELOX"
+
+#inherit "4DGL_16bitColours.fnc"
+
+#DATA
+    word initbuf
+    0xF800,0xF80C,0xF81D,0xD81F,0x701F,0x101F,0x023F,0x05DF,
+    0xF80C,0xF81D,0xD81F,0x701F,0x101F,0x023F,0x05DF,0x07FF,
+    0xF81D,0xD81F,0xF81F,0x101F,0x023F,0x05DF,0x07FF,0x07F5,
+    0xD81F,0xA81F,0x101F,0x023F,0x05DF,0x07FF,0x07F5,0x07E6,
+    0x701F,0x101F,0x023F,0x05DF,0x07FF,0x07F5,0x07E6,0x17E0,
+    0x101F,0x023F,0x05DF,0x07F5,0x07F5,0x07E6,0x17E0,0x77E0,
+    0x023F,0x05DF,0x07FF,0x07F5,0x07E6,0x17E0,0x77E0,0xEFE0,
+    0x05DF,0x07FF,0x07F5,0x07E6,0x17E0,0x77E0,0xEFE0,0xFEE0
+#END
+
+var rbdbufnum;
+var rbdbuf[128];
+
+var combuf[32];
+
+func rbdinit()
+    var i;
+    rbdbufnum := 0;
+    i := 0;
+    while (i < 64)
+        rbdbuf[i] := initbuf[i];
+        rbdbuf[i | 64] := initbuf[i];
+        i++;
+    wend
+endfunc
+
+func rbdrender()
+    var p, x, y, i;
+    p := rbdbufnum << 6;
+    x := 8;
+    y := 8;
+    i := 0;
+    while (i < 64)
+        gfx_CircleFilled(x, y, 6, rbdbuf[p]);
+        p++;
+        x += 16;
+        if (x >= 128)
+            x := 8;
+            y += 16;
+        endif
+        i++;
+    wend
+endfunc
+
+func directmode2()
+    var bufnum, channel, pixel, in, in1, in2, bufptr;
+    setbaud(BAUD_9600);
+    com_Init(combuf,64,0);
+    bufnum := 1;
+    channel := 0;
+    pixel := 0;
+    repeat
+        while ((in := serin()) >= 0)
+            in1 := in & 0xF0;
+            in1 |= in1 >> 4;
+            in2 := in & 0x0F;
+            in2 |= in2 << 4;
+            bufptr := (bufnum << 6) | (pixel << 1);
+            switch (channel)
+                case 0:
+                    rbdbuf[bufptr] := rbdbuf[bufptr] & 0xF81F | ((in1 >> 2) << 5);
+                    bufptr++;
+                    rbdbuf[bufptr] := rbdbuf[bufptr] & 0xF81F | ((in2 >> 2) << 5);
+                    break;
+                case 1:
+                    rbdbuf[bufptr] := rbdbuf[bufptr] & 0x07FF | ((in1 >> 3) << 11);
+                    bufptr++;
+                    rbdbuf[bufptr] := rbdbuf[bufptr] & 0x07FF | ((in2 >> 3) << 11);
+                    break;
+                case 2:
+                    rbdbuf[bufptr] := rbdbuf[bufptr] & 0xFFE0 | (in1 >> 3);
+                    bufptr++;
+                    rbdbuf[bufptr] := rbdbuf[bufptr] & 0xFFE0 | (in2 >> 3);
+                    break;
+            endswitch
+            pixel++;
+            if (pixel >= 32)
+                pixel := 0;
+                channel++;
+                if (channel >= 3)
+                    channel := 0;
+                    rbdbufnum := bufnum;
+                    rbdrender();
+                    bufnum++;
+                    if (bufnum >= 2)
+                        bufnum := 0;
+                    endif
+                endif
+            endif
+        wend
+    forever
+endfunc
+
+func main()
+    gfx_ScreenMode(LANDSCAPE);
+    gfx_RectangleFilled(0,0,128,128,0);
+    rbdinit();
+    rbdrender();
+    directmode2();
+endfunc
+

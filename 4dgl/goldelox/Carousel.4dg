@@ -1,0 +1,366 @@
+#platform "GOLDELOX"
+
+#inherit "4DGL_16bitColours.fnc"
+
+func udiv(var n, var d)
+    if (n >= 0)
+        return n / d;
+    else
+        var o, m, p;
+        o := 0;
+        m := 32767 / d;
+        p := m * d;
+        while (n < 0)
+            n -= p;
+            o += m;
+        wend
+        return (n / d) + o;
+    endif
+endfunc
+
+var root, fs, count, index, advtime, advtype;
+var curcl, vx, vy, delay, frames, frame;
+
+func mount()
+    // Mount Disk
+    if (!media_Init())
+        gfx_MoveTo(18, 56);
+        putstr("Please insert");
+        gfx_MoveTo(18, 64);
+        putstr("MicroSD card.");
+        pause(200);
+        while (!media_Init())
+            pause(200);
+        wend
+        gfx_Cls();
+    endif
+    // Find Root Directory
+    var rsc, tc, ts;
+    media_SetAdd(0, 0x020E);
+    rsc := media_ReadByte();
+    rsc |= media_ReadByte() << 8;
+    media_SetAdd(0, 0x0210);
+    tc := media_ReadByte();
+    media_SetAdd(0, 0x0216);
+    ts := media_ReadByte();
+    ts |= media_ReadByte() << 8;
+    root := tc * ts + rsc + 1;
+endfunc
+
+func readdir(var e1, var e2, var e3, var c)
+    // Read FAT Directory Entry
+    var h, j, a;
+    if (h := media_ReadByte())
+        j := 1; while (j < 8)
+            media_ReadByte();
+        j++; wend
+        *e1 := media_ReadByte();
+        *e2 := media_ReadByte();
+        *e3 := media_ReadByte();
+        a := media_ReadByte();
+        j := 12; while (j < 26)
+            media_ReadByte();
+        j++; wend
+        *c := media_ReadByte();
+        *c |= media_ReadByte() << 8;
+        j := 28; while (j < 32)
+            media_ReadByte();
+        j++; wend
+        if ((h == 0x05) || (h == 0x2E) || (h == 0xE5) || (a & 0x02))
+            return 1;
+        else
+            return 2;
+        endif
+    else
+        return 0;
+    endif
+endfunc
+
+func load_4fs()
+    // Find 4FS File
+    var i, r, e1, e2, e3, c;
+    media_SetSector(0, root);
+    i := 0; while (i < 512)
+        if (r := readdir(&e1, &e2, &e3, &c))
+            if (r > 1 && e1 == 0x34 && e2 == 0x46 && e3 == 0x53)
+                fs := c + 2;
+                media_SetAdd(fs, 0x0200);
+                count := media_ReadWord();
+                index := media_ReadWord();
+                advtime := 0;
+                advtype := 0;
+                return;
+            endif
+        else
+            gfx_MoveTo(8, 60);
+            putstr("Cannot find 4FS.");
+            repeat
+            forever
+        endif
+    i++; wend
+    gfx_MoveTo(8, 60);
+    putstr("Cannot find 4FS.");
+    repeat
+    forever
+endfunc
+
+func load_video()
+    // Find Selected Video
+    media_SetAdd(fs, 0x0220 + (index << 5));
+    curcl := media_ReadWord() + fs;
+    media_SetAdd(curcl, 0x0200);
+    vx := (128 - media_ReadWord()) / 2;
+    vy := (128 - media_ReadWord()) / 2;
+    media_ReadByte();
+    delay := media_ReadByte();
+    frames := media_ReadWord();
+    frame := 0;
+endfunc
+
+func render_video()
+    media_SetAdd(curcl, 0x0200);
+    if (delay)
+        media_VideoFrame(vx, vy, frame);
+        frame++;
+        if (frame >= frames)
+            frame := 0;
+        endif
+    else
+        media_Image(vx, vy);
+    endif
+endfunc
+
+#DATA
+    byte _atmi_0 "Cycle Through\0"
+    byte _atmi_1 "Randomize\0"
+    word advtypes _atmi_0, _atmi_1
+#END
+#constant ADVTYPES 2
+
+func render_menu()
+    var ch, y, idx;
+    // Draw Header
+    txt_Opacity(TRANSPARENT);
+    txt_FGcolour(0xFFFF);
+    gfx_RectangleFilled(0, 0, 128, 16, 0x000F);
+    gfx_MoveTo(4, 4);
+    media_SetAdd(fs, 0x0204);
+    while (ch := media_ReadByte())
+        putch(ch);
+    wend
+    // Draw Menu Items
+    y := 16; idx := index - 3; while (y < 128)
+        if (idx == index)
+            gfx_RectangleFilled(0, y, 128, y + 16, 0xC000);
+        else
+            gfx_RectangleFilled(0, y, 128, y + 16, 0x0000);
+        endif
+        if (idx >= 0 && idx < count)
+            gfx_MoveTo(4, y + 4);
+            media_SetAdd(fs, 0x0222 + (idx << 5));
+            while (ch := media_ReadByte())
+                putch(ch);
+            wend
+        else if (idx >= count && idx < (count + ADVTYPES))
+            gfx_MoveTo(4, y + 4);
+            putstr(advtypes[idx - count]);
+        endif
+    y += 16; idx++; wend
+endfunc
+
+func render_advtime_menu()
+    var y, idx;
+    // Draw Header
+    txt_Opacity(TRANSPARENT);
+    txt_FGcolour(0xFFFF);
+    gfx_RectangleFilled(0, 0, 128, 16, 0x000F);
+    gfx_MoveTo(4, 4);
+    putstr("Set Time Delay");
+    // Draw Menu Items
+    y := 16; idx := advtime - 3; while (y < 128)
+        if (idx == advtime)
+            gfx_RectangleFilled(0, y, 128, y + 16, 0xC000);
+        else
+            gfx_RectangleFilled(0, y, 128, y + 16, 0x0000);
+        endif
+        if (idx == 0)
+            gfx_MoveTo(4, y + 4);
+            putstr("Cancel");
+        else if (idx > 0 && idx <= 12)
+            gfx_MoveTo(4, y + 4);
+            putnum(DEC, idx * 5);
+            putstr("s");
+        endif
+    y += 16; idx++; wend
+endfunc
+
+func advtime_menu()
+    var j;
+    advtime := udiv(advtime, 5000);
+    render_advtime_menu();
+    repeat
+        if (j := joystick())
+            switch (j)
+            case 1: // UP
+            case 2: // LEFT
+                if (advtime > 0)
+                    advtime--;
+                else
+                    advtime := 12;
+                endif
+                render_advtime_menu();
+                break;
+            case 3: // DOWN
+            case 4: // RIGHT
+                if (advtime < 12)
+                    advtime++;
+                else
+                    advtime := 0;
+                endif
+                render_advtime_menu();
+                break;
+            case 5: // CENTER
+                gfx_Cls();
+                break;
+            endswitch
+            pause(50);
+            while (joystick());
+            pause(50);
+            if (j == 5) break;
+        endif
+    forever
+    advtime *= 5000;
+    return advtime;
+endfunc
+
+func menu()
+    var j;
+    if (advtime)
+        index := count + advtype;
+    endif
+    render_menu();
+    repeat
+        if (j := joystick())
+            switch (j)
+            case 1: // UP
+            case 2: // LEFT
+                if (index <= 0)
+                    index := (count + ADVTYPES);
+                endif
+                index--;
+                render_menu();
+                break;
+            case 3: // DOWN
+            case 4: // RIGHT
+                index++;
+                if (index >= (count + ADVTYPES))
+                    index := 0;
+                endif
+                render_menu();
+                break;
+            case 5: // CENTER
+                gfx_Cls();
+                break;
+            endswitch
+            pause(50);
+            while (joystick());
+            pause(50);
+            if (j == 5)
+                if (index >= 0 && index < count)
+                    advtime := 0;
+                    advtype := 0;
+                    break;
+                else if (index >= count && index < (count + ADVTYPES))
+                    if (advtime_menu())
+                        advtype := index - count;
+                        switch (advtype)
+                        case 0:
+                            index := 0;
+                            break;
+                        case 1:
+                            SEED(RAND() + peekW(SYSTEM_TIMER_LO));
+                            index := ABS(RAND() % count);
+                            break;
+                        endswitch
+                        break;
+                    endif
+                endif
+                render_menu();
+            endif
+        endif
+    forever
+endfunc
+
+func action(var j)
+    switch (j)
+    case 1: // UP
+    case 3: // DOWN
+    case 5: // CENTER
+        menu();
+        break;
+    case 2: // LEFT
+        if (index <= 0)
+            index := count;
+        endif
+        index--;
+        advtime := 0;
+        advtype := 0;
+        break;
+    case 4: // RIGHT
+        index++;
+        if (index >= count)
+            index := 0;
+        endif
+        advtime := 0;
+        advtype := 0;
+        break;
+    endswitch
+endfunc
+
+func main()
+    // Initialization
+    gfx_ScreenMode(LANDSCAPE);
+    mount();
+    load_4fs();
+    load_video();
+    pokeW(TIMER0, advtime);
+    pokeW(TIMER1, delay);
+    render_video();
+    // Event Loop
+    var j;
+    repeat
+        if (j := joystick())
+            gfx_Cls();
+            pause(50);
+            while (joystick());
+            pause(50);
+            action(j);
+            load_video();
+            pokeW(TIMER0, advtime);
+            pokeW(TIMER1, delay);
+            render_video();
+        endif
+        if (advtime && !peekW(TIMER0))
+            gfx_Cls();
+            switch (advtype)
+            case 0:
+                index++;
+                if (index >= count)
+                    index := 0;
+                endif
+                break;
+            case 1:
+                index := ABS(RAND() % count);
+                break;
+            endswitch
+            load_video();
+            pokeW(TIMER0, advtime);
+            pokeW(TIMER1, delay);
+            render_video();
+        endif
+        if (delay && !peekW(TIMER1))
+            pokeW(TIMER1, delay);
+            render_video();
+        endif
+    forever
+endfunc

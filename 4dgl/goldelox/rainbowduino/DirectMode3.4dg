@@ -1,0 +1,97 @@
+#platform "GOLDELOX"
+
+#inherit "4DGL_16bitColours.fnc"
+
+#DATA
+    word initbuf
+    0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,
+    0,0,0,0x07E0,0xF800,0,0,0,
+    0,0,0,0x001F,0xFFFF,0,0,0,
+    0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0
+#END
+
+var rbdbufnum;
+var rbdbuf[128];
+
+var combuf[32];
+
+func rbdinit()
+    var i;
+    rbdbufnum := 0;
+    i := 0;
+    while (i < 64)
+        rbdbuf[i] := initbuf[i];
+        rbdbuf[i | 64] := initbuf[i];
+        i++;
+    wend
+endfunc
+
+func rbdrender()
+    var p, x, y, i;
+    p := rbdbufnum << 6;
+    x := 8;
+    y := 8;
+    i := 0;
+    while (i < 64)
+        gfx_CircleFilled(x, y, 6, rbdbuf[p]);
+        p++;
+        x += 16;
+        if (x >= 128)
+            x := 8;
+            y += 16;
+        endif
+        i++;
+    wend
+endfunc
+
+func directmode3()
+    var bufnum, channel, pixel, in, bufptr;
+    setbaud(BAUD_9600);
+    com_Init(combuf,64,0);
+    bufnum := 1;
+    channel := 0;
+    pixel := 0;
+    repeat
+        while ((in := serin()) >= 0)
+            bufptr := (bufnum << 6) | pixel;
+            switch (channel)
+                case 0:
+                    rbdbuf[bufptr] := rbdbuf[bufptr] & 0xFFE0 | (in >> 3);
+                    break;
+                case 1:
+                    rbdbuf[bufptr] := rbdbuf[bufptr] & 0xF81F | ((in >> 2) << 5);
+                    break;
+                case 2:
+                    rbdbuf[bufptr] := rbdbuf[bufptr] & 0x07FF | ((in >> 3) << 11);
+                    break;
+            endswitch
+            pixel++;
+            if (pixel >= 64)
+                pixel := 0;
+                channel++;
+                if (channel >= 3)
+                    channel := 0;
+                    rbdbufnum := bufnum;
+                    rbdrender();
+                    bufnum++;
+                    if (bufnum >= 2)
+                        bufnum := 0;
+                    endif
+                endif
+            endif
+        wend
+    forever
+endfunc
+
+func main()
+    gfx_ScreenMode(LANDSCAPE);
+    gfx_RectangleFilled(0,0,128,128,0);
+    rbdinit();
+    rbdrender();
+    directmode3();
+endfunc
+

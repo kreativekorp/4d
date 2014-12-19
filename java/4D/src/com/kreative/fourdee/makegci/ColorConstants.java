@@ -1,0 +1,47 @@
+package com.kreative.fourdee.makegci;
+
+public interface ColorConstants {
+	public static final int BLACK      = 0xFF000000;
+	public static final int DARK_GRAY  = 0xFF404040;
+	public static final int DARK_GREY  = 0xFF404040;
+	public static final int IRON       = 0xFF404040;
+	public static final int BROWN      = 0xFF996633;
+	public static final int GRAY       = 0xFF808080;
+	public static final int GREY       = 0xFF808080;
+	public static final int SILVER     = 0xFFC0C0C0;
+	public static final int LIGHT_GRAY = 0xFFC0C0C0;
+	public static final int LIGHT_GREY = 0xFFC0C0C0;
+	public static final int WHITE      = 0xFFFFFFFF;
+	public static final int MAROON     = 0xFF800000;
+	public static final int UMBER      = 0xFF804000;
+	public static final int OLIVE      = 0xFF808000;
+	public static final int PINE       = 0xFF008000;
+	public static final int TEAL       = 0xFF008080;
+	public static final int NAVY       = 0xFF000080;
+	public static final int EGGPLANT   = 0xFF400080;
+	public static final int PLUM       = 0xFF800080;
+	public static final int RED        = 0xFFFF0000;
+	public static final int SCARLET    = 0xFFFF4000;
+	public static final int ORANGE     = 0xFFFF8000;
+	public static final int GOLD       = 0xFFFFC000;
+	public static final int YELLOW     = 0xFFFFFF00;
+	public static final int CHARTREUSE = 0xFF80FF00;
+	public static final int GREEN      = 0xFF00FF00;
+	public static final int AQUAMARINE = 0xFF00FF80;
+	public static final int CYAN       = 0xFF00FFFF;
+	public static final int AZURE      = 0xFF0080FF;
+	public static final int BLUE       = 0xFF0000FF;
+	public static final int INDIGO     = 0xFF4000FF;
+	public static final int VIOLET     = 0xFF8000FF;
+	public static final int PURPLE     = 0xFFC000FF;
+	public static final int MAGENTA    = 0xFFFF00FF;
+	public static final int ROSE       = 0xFFFF0080;
+	public static final int CORAL      = 0xFFFF8080;
+	public static final int CORANGE    = 0xFFFFC080;
+	public static final int LEMON      = 0xFFFFFF80;
+	public static final int LIME       = 0xFF80FF80;
+	public static final int SKY        = 0xFF80FFFF;
+	public static final int FROST      = 0xFF8080FF;
+	public static final int LAVENDER   = 0xFFC080FF;
+	public static final int PINK       = 0xFFFF80FF;
+}

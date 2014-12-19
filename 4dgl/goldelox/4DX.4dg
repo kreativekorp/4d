@@ -1,0 +1,991 @@
+#platform "GOLDELOX"
+
+#inherit "4DGL_16bitColours.fnc"
+
+#constant MAX_DICE 64
+
+var root, dx;
+var imageIndex, imageCount, imageData;
+var diceIndex, diceCount, diceData;
+var rollIndex, rollCount, rollData;
+var layoutIndex, layoutCount, layoutData;
+var mem, currCount, orderType, currLayout;
+var currOrder[MAX_DICE];
+var currValue[MAX_DICE];
+
+func mount()
+    // Mount Disk
+    if (!media_Init())
+        gfx_MoveTo(18, 56);
+        putstr("Please insert");
+        gfx_MoveTo(18, 64);
+        putstr("MicroSD card.");
+        pause(200);
+        while (!media_Init())
+            pause(200);
+        wend
+        gfx_Cls();
+    endif
+    // Find Root Directory
+    var rsc, tc, ts;
+    media_SetAdd(0, 0x020E);
+    rsc := media_ReadByte();
+    rsc |= media_ReadByte() << 8;
+    media_SetAdd(0, 0x0210);
+    tc := media_ReadByte();
+    media_SetAdd(0, 0x0216);
+    ts := media_ReadByte();
+    ts |= media_ReadByte() << 8;
+    root := tc * ts + rsc + 1;
+endfunc
+
+func readdir(var e1, var e2, var e3, var c)
+    // Read FAT Directory Entry
+    var h, j, a;
+    if (h := media_ReadByte())
+        j := 1; while (j < 8)
+            media_ReadByte();
+        j++; wend
+        *e1 := media_ReadByte();
+        *e2 := media_ReadByte();
+        *e3 := media_ReadByte();
+        a := media_ReadByte();
+        j := 12; while (j < 26)
+            media_ReadByte();
+        j++; wend
+        *c := media_ReadByte();
+        *c |= media_ReadByte() << 8;
+        j := 28; while (j < 32)
+            media_ReadByte();
+        j++; wend
+        if ((h == 0x05) || (h == 0x2E) || (h == 0xE5) || (a & 0x02))
+            return 1;
+        else
+            return 2;
+        endif
+    else
+        return 0;
+    endif
+endfunc
+
+func load_4dx()
+    // Find 4DX File
+    var i, r, e1, e2, e3, c;
+    media_SetSector(0, root);
+    i := 0; while (i < 512)
+        if (r := readdir(&e1, &e2, &e3, &c))
+            if (r > 1 && e1 == 0x34 && e2 == 0x44 && e3 == 0x58)
+                dx := c + 2;
+                media_SetAdd(dx, 0x0200);
+                imageIndex := media_ReadWord() + dx;
+                imageCount := media_ReadWord();
+                imageData := media_ReadWord() + dx;
+                media_ReadWord();
+                diceIndex := media_ReadWord() + dx;
+                diceCount := media_ReadWord();
+                diceData := media_ReadWord() + dx;
+                media_ReadWord();
+                rollIndex := media_ReadWord() + dx;
+                rollCount := media_ReadWord();
+                rollData := media_ReadWord() + dx;
+                media_ReadWord();
+                layoutIndex := media_ReadWord() + dx;
+                layoutCount := media_ReadWord();
+                layoutData := media_ReadWord() + dx;
+                media_ReadWord();
+                mem := media_ReadWord() + dx;
+                media_SetAdd(mem, 0x0200);
+                currCount := media_ReadWord();
+                orderType := media_ReadWord();
+                media_ReadWord();
+                media_ReadWord();
+                media_ReadWord();
+                media_ReadWord();
+                currLayout := media_ReadWord();
+                SEED(media_ReadWord() + peekW(SYSTEM_TIMER_LO));
+                return;
+            endif
+        else
+            gfx_MoveTo(8, 60);
+            putstr("Cannot find 4DX.");
+            repeat
+            forever
+        endif
+    i++; wend
+    gfx_MoveTo(8, 60);
+    putstr("Cannot find 4DX.");
+    repeat
+    forever
+endfunc
+
+func order_dice(var first)
+    var i, j, k, tmp;
+    switch (orderType)
+    case 0:
+        if (first)
+            i := 0; while (i < currCount)
+                currOrder[i] := i;
+            i++; wend
+        endif
+        break;
+    case 1:
+        if (first)
+            i := 0; j := currCount - 1; while (i < currCount)
+                currOrder[i] := j;
+            i++; j--; wend
+        endif
+        break;
+    case 2:
+        if (first)
+            i := 0; while (i < currCount)
+                currOrder[i] := i;
+            i++; wend
+        endif
+        i := 0; j := currCount; while (i < currCount)
+            k := i + ABS(RAND() % j);
+            tmp := currOrder[i];
+            currOrder[i] := currOrder[k];
+            currOrder[k] := tmp;
+        i++; j--; wend
+        break;
+    endswitch
+endfunc
+
+func roll_dice()
+    var index, type, sides, maximumSides;
+    index := 0; while (index < currCount)
+        media_SetAdd(mem, 0x0400 + (index << 9));
+        media_ReadWord();
+        type := media_ReadWord();
+        media_ReadWord();
+        media_ReadWord();
+        sides := media_ReadWord();
+        media_ReadWord();
+        media_ReadWord();
+        maximumSides := media_ReadWord();
+        switch (type)
+        case 0:
+            currValue[index] := ABS(RAND() % maximumSides);
+            break;
+        case 1: case 2:
+            currValue[index] := ABS(RAND() % sides);
+            break;
+        endswitch
+    index++; wend
+endfunc
+
+func render_dice_digit(var dice, var place, var value, var x, var y, var size)
+    var image;
+    media_SetAdd(diceData + dice, 0x0200 + size + (place << 6) + (value << 2));
+    x += media_ReadWord();
+    image := media_ReadWord();
+    media_SetAdd(imageData + image, 0x0200 + size);
+    media_Image(x, y);
+endfunc
+
+func render_dice()
+    var index, dice, type;
+    var minimumValue, baseValue;
+    var x, y, size;
+    var value, image;
+    index := 0; while (index < currCount)
+        media_SetAdd(mem, 0x0400 + (index << 9));
+        dice := media_ReadWord();
+        type := media_ReadWord();
+        media_ReadWord();
+        minimumValue := media_ReadWord();
+        media_ReadWord();
+        baseValue := media_ReadWord();
+        media_ReadWord();
+        media_ReadWord();
+        media_SetAdd(layoutData + currLayout, 0x0202 + (currCount << 9) + (currOrder[index] * 6));
+        x := media_ReadWord();
+        y := media_ReadWord();
+        size := media_ReadWord();
+        switch (type)
+        case 0:
+            value := currValue[index];
+            break;
+        case 1:
+            value := currValue[index] + minimumValue - baseValue;
+            break;
+        case 2:
+            value := currValue[index] + minimumValue;
+            break;
+        endswitch
+        switch (type)
+        case 0: case 1:
+            media_SetAdd(diceData + dice, 0x0600 + (value << 1));
+            image := media_ReadWord();
+            media_SetAdd(imageData + image, 0x0200 + size);
+            media_Image(x, y);
+            break;
+        case 2:
+            media_SetAdd(diceData + dice, 0x0408);
+            image := media_ReadWord();
+            media_SetAdd(imageData + image, 0x0200 + size);
+            media_Image(x, y);
+            if (value < 10)
+                render_dice_digit(dice, 1, value, x, y, size);
+            else if (value < 100)
+                render_dice_digit(dice, 2, (value / 10), x, y, size);
+                render_dice_digit(dice, 3, (value % 10), x, y, size);
+            else if (value < 1000)
+                render_dice_digit(dice, 4, (value / 100), x, y, size);
+                render_dice_digit(dice, 5, ((value / 10) % 10), x, y, size);
+                render_dice_digit(dice, 6, (value % 10), x, y, size);
+            else if (value < 10000)
+                render_dice_digit(dice, 7, (value / 1000), x, y, size);
+                render_dice_digit(dice, 8, ((value / 100) % 10), x, y, size);
+                render_dice_digit(dice, 9, ((value / 10) % 10), x, y, size);
+                render_dice_digit(dice, 10, (value % 10), x, y, size);
+            endif
+            break;
+        endswitch
+    index++; wend
+endfunc
+
+func render_amenu(var title, var * options, var count, var index)
+    var y, idx;
+    // Draw Header
+    txt_Opacity(TRANSPARENT);
+    txt_FGcolour(0xFFFF);
+    gfx_RectangleFilled(0, 0, 128, 16, 0x000F);
+    gfx_MoveTo(4, 4);
+    putstr(title);
+    // Draw Menu Items
+    y := 16; idx := index - 3; while (y < 128)
+        if (idx == index)
+            gfx_RectangleFilled(0, y, 128, y + 16, 0xC000);
+        else
+            gfx_RectangleFilled(0, y, 128, y + 16, 0x0000);
+        endif
+        if (idx == count)
+            gfx_MoveTo(4, y + 4);
+            putstr("Cancel");
+        else if (idx >= 0 && idx < count)
+            gfx_MoveTo(4, y + 4);
+            if (options < 0)
+                putstr(options[idx << 1]);
+            else
+                putstr(options[idx]);
+            endif
+        endif
+    y += 16; idx++; wend
+endfunc
+
+func render_rmenu(var title, var cluster, var count, var index)
+    var y, idx, ch;
+    // Draw Header
+    txt_Opacity(TRANSPARENT);
+    txt_FGcolour(0xFFFF);
+    gfx_RectangleFilled(0, 0, 128, 16, 0x000F);
+    gfx_MoveTo(4, 4);
+    putstr(title);
+    // Draw Menu Items
+    y := 16; idx := index - 3; while (y < 128)
+        if (idx == index)
+            gfx_RectangleFilled(0, y, 128, y + 16, 0xC000);
+        else
+            gfx_RectangleFilled(0, y, 128, y + 16, 0x0000);
+        endif
+        if (idx == count)
+            gfx_MoveTo(4, y + 4);
+            putstr("Cancel");
+        else if (idx >= 0 && idx < count)
+            gfx_MoveTo(4, y + 4);
+            media_SetAdd(cluster, 0x0202 + (idx << 5));
+            while (ch := media_ReadByte())
+                putch(ch);
+            wend
+        endif
+    y += 16; idx++; wend
+endfunc
+
+func render_dmenu(var title, var index, var first)
+    var x, y, size;
+    if (first)
+        txt_Opacity(TRANSPARENT);
+        txt_FGcolour(0xFFFF);
+        gfx_RectangleFilled(0, 0, 128, 16, 0x000F);
+        gfx_MoveTo(4, 4);
+        putstr(title);
+        gfx_RectangleFilled(0, 16, 128, 128, 0x0000);
+    endif
+    if (index == currCount)
+        txt_FGcolour(0xF800);
+        gfx_MoveTo(43, 60);
+        putstr("Cancel");
+    else
+        render_dice();
+        if (index >= 0 && index < currCount)
+            media_SetAdd(layoutData + currLayout, 0x0202 + (currCount << 9) + (index * 6));
+            x := media_ReadWord();
+            y := media_ReadWord();
+            size := media_ReadWord();
+            switch (size)
+            case 0x0010: size :=  2; break;
+            case 0x0020: size :=  3; break;
+            case 0x0040: size :=  4; break;
+            case 0x0080: size :=  6; break;
+            case 0x0100: size :=  8; break;
+            case 0x0200: size := 12; break;
+            case 0x0400: size := 16; break;
+            case 0x0800: size := 24; break;
+            case 0x1000: size := 32; break;
+            case 0x2000: size := 48; break;
+            case 0x4000: size := 64; break;
+            case 0x8000: size := 96; break;
+            endswitch
+            gfx_Rectangle(x    , y    , x + size - 1, y + size - 1, 0xC000);
+            gfx_Rectangle(x + 1, y + 1, x + size - 2, y + size - 2, 0xC000);
+            gfx_Rectangle(x + 2, y + 2, x + size - 3, y + size - 3, 0xC000);
+        endif
+    endif
+endfunc
+
+func render_smenu(var title, var minimumValue, var sides, var index)
+    // Draw Header
+    txt_Opacity(TRANSPARENT);
+    txt_FGcolour(0xFFFF);
+    gfx_RectangleFilled(0, 0, 128, 16, 0x000F);
+    gfx_MoveTo(4, 4);
+    putstr(title);
+    // Draw Menu Items
+    gfx_RectangleFilled(0, 16, 128, 32, 0x0000);
+    gfx_RectangleFilled(0, 32, 128, 48, 0xC000 * (index == 0));
+    gfx_MoveTo(4, 36); putstr("Min. Value:");
+    gfx_MoveTo(89, 36); putnum(DEC5ZB, minimumValue);
+    gfx_RectangleFilled(0, 48, 128, 64, 0xC000 * (index == 1));
+    gfx_MoveTo(4, 52); putstr("Max. Value:");
+    gfx_MoveTo(89, 52); putnum(DEC5ZB, minimumValue + sides - 1);
+    gfx_RectangleFilled(0, 64, 128, 80, 0xC000 * (index == 2));
+    gfx_MoveTo(4, 68); putstr("Num. Sides:");
+    gfx_MoveTo(89, 68); putnum(DEC5ZB, sides);
+    gfx_RectangleFilled(0, 80, 128, 96, 0xC000 * (index == 3));
+    gfx_MoveTo(4, 84); putstr("OK");
+    gfx_RectangleFilled(0, 96, 128, 112, 0xC000 * (index == 4));
+    gfx_MoveTo(4, 100); putstr("Cancel");
+    gfx_RectangleFilled(0, 112, 128, 128, 0x0000);
+endfunc
+
+func amenu(var title, var * options, var count, var index)
+    var j;
+    if (!(index >= 0 && index < count))
+        index := 0;
+    endif
+    render_amenu(title, options, count, index);
+    repeat
+        if (j := joystick())
+            switch (j)
+            case 1: // UP
+                if (index > 0)
+                    index--;
+                else
+                    index := count;
+                endif
+                render_amenu(title, options, count, index);
+                break;
+            case 2: // LEFT
+                index := count;
+                render_amenu(title, options, count, index);
+                break;
+            case 3: // DOWN
+            case 4: // RIGHT
+                if (index < count)
+                    index++;
+                else
+                    index := 0;
+                endif
+                render_amenu(title, options, count, index);
+                break;
+            case 5: // CENTER
+                gfx_Cls();
+                break;
+            endswitch
+            pause(50);
+            while (joystick());
+            pause(50);
+            if (j == 5) break;
+        endif
+    forever
+    if (!(index >= 0 && index < count))
+        index := -1;
+    endif
+    return index;
+endfunc
+
+func rmenu(var title, var cluster, var count, var index)
+    var j;
+    if (index >= 0 && index < count)
+        j := 0; while (j < count)
+            media_SetAdd(cluster, 0x0200 + (j << 5));
+            if (media_ReadWord() == index)
+                index := j;
+                break;
+            endif
+        j++; wend
+    else
+        index := 0;
+    endif
+    render_rmenu(title, cluster, count, index);
+    repeat
+        if (j := joystick())
+            switch (j)
+            case 1: // UP
+                if (index > 0)
+                    index--;
+                else
+                    index := count;
+                endif
+                render_rmenu(title, cluster, count, index);
+                break;
+            case 2: // LEFT
+                index := count;
+                render_rmenu(title, cluster, count, index);
+                break;
+            case 3: // DOWN
+            case 4: // RIGHT
+                if (index < count)
+                    index++;
+                else
+                    index := 0;
+                endif
+                render_rmenu(title, cluster, count, index);
+                break;
+            case 5: // CENTER
+                gfx_Cls();
+                break;
+            endswitch
+            pause(50);
+            while (joystick());
+            pause(50);
+            if (j == 5) break;
+        endif
+    forever
+    if (index >= 0 && index < count)
+        media_SetAdd(cluster, 0x0200 + (index << 5));
+        index := media_ReadWord();
+    else
+        index := -1;
+    endif
+    return index;
+endfunc
+
+func dmenu(var title, var index)
+    var j;
+    if (index >= 0 && index < currCount)
+        index := currOrder[index];
+    else
+        index := 0;
+    endif
+    render_dmenu(title, index, TRUE);
+    repeat
+        if (j := joystick())
+            switch (j)
+            case 1: // UP
+                if (index > 0)
+                    index--;
+                else
+                    index := currCount;
+                endif
+                render_dmenu(title, index, index >= (currCount - 1));
+                break;
+            case 2: // LEFT
+                index := currCount;
+                render_dmenu(title, index, TRUE);
+                break;
+            case 3: // DOWN
+            case 4: // RIGHT
+                if (index < currCount)
+                    index++;
+                else
+                    index := 0;
+                endif
+                render_dmenu(title, index, (index == 0 || index == currCount));
+                break;
+            case 5: // CENTER
+                gfx_Cls();
+                break;
+            endswitch
+            pause(50);
+            while (joystick());
+            pause(50);
+            if (j == 5) break;
+        endif
+    forever
+    if (index >= 0 && index < currCount)
+        j := 0; while (j < currCount)
+            if (currOrder[j] == index)
+                index := j;
+                break;
+            endif
+        j++; wend
+    else
+        index := -1;
+    endif
+    return index;
+endfunc
+
+func smenu(var title, var baseValue, var maximumSides, var minimumValue, var sides, var index)
+    var inloop, j;
+    if (!(index >= 0 && index < 4))
+        index := 0;
+    endif
+    render_smenu(title, *minimumValue, *sides, index);
+    inloop := TRUE;
+    while (inloop)
+        if (j := joystick())
+            switch (j)
+            case 1: // UP
+                if (index > 0)
+                    index--;
+                else
+                    index := 4;
+                endif
+                render_smenu(title, *minimumValue, *sides, index);
+                break;
+            case 3: // DOWN
+                if (index < 4)
+                    index++;
+                else
+                    index := 0;
+                endif
+                render_smenu(title, *minimumValue, *sides, index);
+                break;
+            case 2: // LEFT
+                switch (index)
+                case 0:
+                    if ((*minimumValue) > baseValue)
+                        (*minimumValue)--;
+                    endif
+                    break;
+                case 1: case 2:
+                    if ((*sides) > 1)
+                        (*sides)--;
+                    endif
+                    break;
+                default:
+                    index := 4;
+                    break;
+                endswitch
+                render_smenu(title, *minimumValue, *sides, index);
+                break;
+            case 4: // RIGHT
+                switch (index)
+                case 0:
+                    if ((*minimumValue) < (baseValue + maximumSides - (*sides)))
+                        (*minimumValue)++;
+                    endif
+                    break;
+                case 1: case 2:
+                    if ((*sides) < (baseValue + maximumSides - (*minimumValue)))
+                        (*sides)++;
+                    endif
+                    break;
+                default:
+                    if (index < 4)
+                        index++;
+                    else
+                        index := 3;
+                    endif
+                    break;
+                endswitch
+                render_smenu(title, *minimumValue, *sides, index);
+                break;
+            case 5: // CENTER
+                switch (index)
+                case 0: case 1: case 2:
+                    index++;
+                    render_smenu(title, *minimumValue, *sides, index);
+                    break;
+                default:
+                    gfx_Cls();
+                    inloop := FALSE;
+                    break;
+                endswitch
+                break;
+            endswitch
+            pause(50);
+            while (joystick());
+            pause(50);
+        endif
+    wend
+    if (!(index >= 0 && index < 4))
+        index := -1;
+    endif
+    return index;
+endfunc
+
+func write_mem_header()
+    media_SetAdd(mem, 0x0200);
+    media_WriteWord(currCount);
+    media_WriteWord(orderType);
+    media_WriteWord(0x7E7E);
+    media_WriteWord(0x5341);
+    media_WriteWord(0x5645);
+    media_WriteWord(0x7E7E);
+    media_WriteWord(currLayout);
+    media_WriteWord(RAND() + peekW(SYSTEM_TIMER_LO));
+    media_Flush();
+endfunc
+
+func load_preset_menu()
+    var roll, i, j;
+    var buf[8];
+    roll := rmenu("Load Preset", rollIndex, rollCount, -1);
+    if (roll == -1)
+        return FALSE;
+    else
+        media_SetAdd(rollData + roll, 0x0200);
+        currCount := media_ReadWord();
+        orderType := media_ReadWord();
+        write_mem_header();
+        i := 0; while (i < currCount)
+            media_SetAdd(rollData + roll, 0x0400 + (i << 4));
+            j := 0; while (j < 8)
+                buf[j] := media_ReadWord();
+            j++; wend
+            media_SetAdd(mem, 0x0400 + (i << 9));
+            j := 0; while (j < 8)
+                media_WriteWord(buf[j]);
+            j++; wend
+            media_Flush();
+        i++; wend
+        order_dice(TRUE);
+        roll_dice();
+        render_dice();
+        return TRUE;
+    endif
+endfunc
+
+func replace_menu()
+    var dice, type;
+    var baseValue, defaultSides, maximumSides;
+    var minimumValue, sides;
+    dice := rmenu("Replace", diceIndex, diceCount, -1);
+    if (dice == -1)
+        return FALSE;
+    else
+        media_SetAdd(diceData + dice, 0x0400);
+        type := media_ReadWord();
+        baseValue := media_ReadWord();
+        defaultSides := media_ReadWord();
+        maximumSides := media_ReadWord();
+        switch (type)
+        case 0:
+            minimumValue := 0;
+            sides := 0;
+            break;
+        case 1:
+            minimumValue := 1;
+            if (minimumValue < baseValue)
+                minimumValue := baseValue;
+            endif
+            sides := defaultSides;
+            if (smenu("Replace", baseValue, maximumSides, &minimumValue, &sides, -1) == -1)
+                return FALSE;
+            endif
+            break;
+        case 2:
+            minimumValue := 1;
+            sides := defaultSides;
+            if (smenu("Replace", 0, maximumSides, &minimumValue, &sides, -1) == -1)
+                return FALSE;
+            endif
+            break;
+        endswitch
+        media_SetAdd(mem, 0x0400);
+        media_WriteWord(dice);
+        media_WriteWord(type);
+        media_WriteWord(0);
+        media_WriteWord(minimumValue);
+        media_WriteWord(sides);
+        media_WriteWord(baseValue);
+        media_WriteWord(defaultSides);
+        media_WriteWord(maximumSides);
+        media_Flush();
+        currCount := 1;
+        orderType := 0;
+        write_mem_header();
+        order_dice(TRUE);
+        roll_dice();
+        render_dice();
+        return TRUE;
+    endif
+endfunc
+
+func add_menu()
+    var dice, type;
+    var baseValue, defaultSides, maximumSides;
+    var minimumValue, sides;
+    if (currCount >= MAX_DICE)
+        txt_FGcolour(0xFFE0);
+        gfx_Cls();
+        gfx_MoveTo(18, 60);
+        putstr("No more room!");
+        while (!joystick());
+        gfx_Cls();
+        pause(50);
+        while (joystick());
+        pause(50);
+        return FALSE;
+    endif
+    dice := rmenu("Add", diceIndex, diceCount, -1);
+    if (dice == -1)
+        return FALSE;
+    else
+        media_SetAdd(diceData + dice, 0x0400);
+        type := media_ReadWord();
+        baseValue := media_ReadWord();
+        defaultSides := media_ReadWord();
+        maximumSides := media_ReadWord();
+        switch (type)
+        case 0:
+            minimumValue := 0;
+            sides := 0;
+            break;
+        case 1:
+            minimumValue := 1;
+            if (minimumValue < baseValue)
+                minimumValue := baseValue;
+            endif
+            sides := defaultSides;
+            if (smenu("Add", baseValue, maximumSides, &minimumValue, &sides, -1) == -1)
+                return FALSE;
+            endif
+            break;
+        case 2:
+            minimumValue := 1;
+            sides := defaultSides;
+            if (smenu("Add", 0, maximumSides, &minimumValue, &sides, -1) == -1)
+                return FALSE;
+            endif
+            break;
+        endswitch
+        media_SetAdd(mem, 0x0400 + (currCount << 9));
+        media_WriteWord(dice);
+        media_WriteWord(type);
+        media_WriteWord(0);
+        media_WriteWord(minimumValue);
+        media_WriteWord(sides);
+        media_WriteWord(baseValue);
+        media_WriteWord(defaultSides);
+        media_WriteWord(maximumSides);
+        media_Flush();
+        currCount++;
+        write_mem_header();
+        order_dice(TRUE);
+        roll_dice();
+        render_dice();
+        return TRUE;
+    endif
+endfunc
+
+func edit_menu()
+    var index, dice, type;
+    var value, minimumValue, sides;
+    var baseValue, defaultSides, maximumSides;
+    index := dmenu("Edit", -1);
+    if (index == -1)
+        return FALSE;
+    else
+        media_SetAdd(mem, 0x0400 + (index << 9));
+        dice := media_ReadWord();
+        type := media_ReadWord();
+        value := media_ReadWord();
+        minimumValue := media_ReadWord();
+        sides := media_ReadWord();
+        baseValue := media_ReadWord();
+        defaultSides := media_ReadWord();
+        maximumSides := media_ReadWord();
+        switch (type)
+        case 0:
+            txt_FGcolour(0xFFE0);
+            gfx_MoveTo(18, 60);
+            putstr("Not editable!");
+            while (!joystick());
+            gfx_Cls();
+            pause(50);
+            while (joystick());
+            pause(50);
+            return FALSE;
+            break;
+        case 1:
+            if (smenu("Edit", baseValue, maximumSides, &minimumValue, &sides, -1) == -1)
+                return FALSE;
+            endif
+            break;
+        case 2:
+            if (smenu("Edit", 0, maximumSides, &minimumValue, &sides, -1) == -1)
+                return FALSE;
+            endif
+            break;
+        endswitch
+        media_SetAdd(mem, 0x0400 + (index << 9));
+        media_WriteWord(dice);
+        media_WriteWord(type);
+        media_WriteWord(value);
+        media_WriteWord(minimumValue);
+        media_WriteWord(sides);
+        media_WriteWord(baseValue);
+        media_WriteWord(defaultSides);
+        media_WriteWord(maximumSides);
+        media_Flush();
+        order_dice(TRUE);
+        roll_dice();
+        render_dice();
+        return TRUE;
+    endif
+endfunc
+
+func remove_menu()
+    var index, j;
+    var buf[8];
+    if (currCount < 2)
+        txt_FGcolour(0xFFE0);
+        gfx_Cls();
+        gfx_MoveTo(1, 60);
+        putstr("Nothing to remove!");
+        while (!joystick());
+        gfx_Cls();
+        pause(50);
+        while (joystick());
+        pause(50);
+        return FALSE;
+    endif
+    index := dmenu("Remove", -1);
+    if (index == -1)
+        return FALSE;
+    else
+        currCount--;
+        write_mem_header();
+        while (index < currCount)
+            media_SetAdd(mem, 0x0600 + (index << 9));
+            j := 0; while (j < 8)
+                buf[j] := media_ReadWord();
+            j++; wend
+            media_SetAdd(mem, 0x0400 + (index << 9));
+            j := 0; while (j < 8)
+                media_WriteWord(buf[j]);
+            j++; wend
+            media_Flush();
+            index++;
+        wend
+        order_dice(TRUE);
+        roll_dice();
+        render_dice();
+        return TRUE;
+    endif
+endfunc
+
+#DATA
+    byte _somi_0 "Normal\0"
+    byte _somi_1 "Reverse\0"
+    byte _somi_2 "Random\0"
+    word set_order_menu_items _somi_0, _somi_1, _somi_2
+#END
+#constant SET_ORDER_MENU_ITEMS 3
+func set_order_menu()
+    var order;
+    order := amenu("Set Order", set_order_menu_items, SET_ORDER_MENU_ITEMS, orderType);
+    if (order == -1)
+        return FALSE;
+    else
+        orderType := order;
+        write_mem_header();
+        order_dice(TRUE);
+        render_dice();
+        return TRUE;
+    endif
+endfunc
+
+func set_layout_menu()
+    var layout;
+    layout := rmenu("Set Layout", layoutIndex, layoutCount, currLayout);
+    if (layout == -1)
+        return FALSE;
+    else
+        currLayout := layout;
+        write_mem_header();
+        render_dice();
+        return TRUE;
+    endif
+endfunc
+
+#DATA
+    byte _mmi_0 "Roll\0"
+    byte _mmi_1 "Load Preset\0"
+    byte _mmi_2 "Replace\0"
+    byte _mmi_3 "Add\0"
+    byte _mmi_4 "Edit\0"
+    byte _mmi_5 "Remove\0"
+    byte _mmi_6 "Set Order\0"
+    byte _mmi_7 "Set Layout\0"
+    word main_menu_items _mmi_0, _mmi_1, _mmi_2, _mmi_3, _mmi_4, _mmi_5, _mmi_6, _mmi_7
+#END
+#constant MAIN_MENU_ITEMS 8
+func main_menu(var index)
+    index := amenu("dX", main_menu_items, MAIN_MENU_ITEMS, index);
+    switch (index)
+    case 0:
+        order_dice(FALSE);
+        roll_dice();
+        render_dice();
+        index := -1;
+        break;
+    case 1: if (load_preset_menu()) index := -1; break;
+    case 2: if (replace_menu()) index := -1; break;
+    case 3: if (add_menu()) index := -1; break;
+    case 4: if (edit_menu()) index := -1; break;
+    case 5: if (remove_menu()) index := -1; break;
+    case 6: if (set_order_menu()) index := -1; break;
+    case 7: if (set_layout_menu()) index := -1; break;
+    default:
+        render_dice();
+        index := -1;
+        break;
+    endswitch
+    return index;
+endfunc
+
+func main()
+    // Initialization
+    gfx_ScreenMode(LANDSCAPE);
+    mount();
+    load_4dx();
+    order_dice(TRUE);
+    roll_dice();
+    render_dice();
+    // Event Loop
+    var j;
+    repeat
+        if (j := joystick())
+            SEED(RAND() + peekW(SYSTEM_TIMER_LO) + j);
+            if (j == 5)
+                gfx_Cls();
+                pause(50);
+                while (joystick());
+                pause(50);
+                j := -1; while ((j := main_menu(j)) != -1);
+            else
+                order_dice(FALSE);
+                roll_dice();
+                pause(50);
+                while (joystick())
+                    render_dice();
+                    order_dice(FALSE);
+                    roll_dice();
+                wend
+                pause(50);
+                render_dice();
+            endif
+        endif
+        if (pin_Read(IO2))
+            SEED(RAND() + peekW(SYSTEM_TIMER_LO) + j);
+            order_dice(FALSE);
+            roll_dice();
+            render_dice();
+        endif
+    forever
+endfunc
