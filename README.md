@@ -23,9 +23,9 @@ The **hardware** directory contains descriptions of physical items to accompany 
 
 **Joydelox 1.0** is a PCB that connects to a GOLDELOX LCD module to provide joystick input and power.
 
-[`hardware/joydelox/1.1/`](https://github.com/kreativekorp/4d/tree/master/hardware/joydelox/1.1)
+[`hardware/joydelox/1.1.1/`](https://github.com/kreativekorp/4d/tree/master/hardware/joydelox/1.1.1)
 
-**Joydelox 1.1** is a PCB that connects to a GOLDELOX LCD module to provide joystick input, a piezo knock sensor, and power.
+**Joydelox 1.1.1** is a PCB that connects to a GOLDELOX LCD module to provide joystick input, a piezo knock sensor, and power.
 
 [`hardware/spritelet/`](https://github.com/kreativekorp/4d/tree/master/hardware/spritelet)
 
