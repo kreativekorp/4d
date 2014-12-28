@@ -15,6 +15,7 @@ public class MakeGCI {
 		Anchor anchor = Anchor.CENTER;
 		int x = 0, y = 0;
 		Color matte = Color.black;
+		CropType crop = CropType.NO_CROP;
 		int argi = 0;
 		while (argi < args.length) {
 			String arg = args[argi++];
@@ -28,6 +29,7 @@ public class MakeGCI {
 					System.out.println("-x <num>  : Set X offset of image on canvas.");
 					System.out.println("-y <num>  : Set Y offset of image on canvas.");
 					System.out.println("-m <str>  : Set matte color.");
+					System.out.println("-c <str>  : Set image cropping: none, max, rect, or square.");
 				} else if (arg.equals("-o") && argi < args.length) {
 					outputFile = args[argi++];
 				} else if (arg.equals("-d") && argi < args.length) {
@@ -44,6 +46,8 @@ public class MakeGCI {
 					y = Strings.parseInt(args[argi++], 0);
 				} else if (arg.equals("-m") && argi < args.length) {
 					matte = new Color(ColorUtilities.parseColor(args[argi++], ColorConstants.BLACK));
+				} else if (arg.equals("-c") && argi < args.length) {
+					crop = CropType.parseCropType(args[argi++]);
 				} else {
 					System.err.println("Invalid option: " + arg);
 				}
@@ -65,6 +69,7 @@ public class MakeGCI {
 					image.setX(anchor.getX(image.getWidth(), image.getFrame(0).getWidth()) + x);
 					image.setY(anchor.getY(image.getHeight(), image.getFrame(0).getHeight()) + y);
 					image.setMatte(matte);
+					image = crop.cropImage(image);
 					ImageIO.write(out, image, "gci");
 				} catch (IOException ioe) {
 					System.err.println("Error converting " + arg + ": " + ioe.getMessage());
