@@ -126,14 +126,14 @@ public class FileSystemTable extends JTable {
 		}
 	}
 	
-	public boolean addFile(java.io.File in) {
+	public boolean addFile(java.io.File in, boolean stripExtension) {
 		if (in == null) return false;
 		TableModel model = getModel();
 		if (!(model instanceof FileSystemTableModel)) return false;
 		FileSystemTableModel fsmodel = (FileSystemTableModel)model;
 		FileSystem fs = fsmodel.getFileSystem();
 		try {
-			fs.add(new File(in));
+			fs.add(new File(in, stripExtension));
 			int index = fs.size() - 1;
 			fsmodel.fireTableRowsInserted(index, index);
 			return true;

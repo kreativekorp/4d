@@ -46,7 +46,8 @@ public class FileSystemButtonPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				java.io.File file = Dialogs.openFile("Add File");
 				if (file == null) return;
-				FileSystemButtonPanel.this.table.addFile(file);
+				boolean stripExtension = ((e.getModifiers() & ActionEvent.SHIFT_MASK) == 0);
+				FileSystemButtonPanel.this.table.addFile(file, stripExtension);
 			}
 		});
 		removeButton.addActionListener(new ActionListener() {

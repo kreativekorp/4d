@@ -1,19 +1,32 @@
 package com.kreative.fourdee.fourfs;
 
+import java.awt.AWTEvent;
+import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
+import java.awt.event.AWTEventListener;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.List;
 
 public class FileSystemDropTarget implements DropTargetListener {
 	private FileSystemTable owner;
+	private boolean shiftDown;
 	
 	public FileSystemDropTarget(FileSystemTable owner) {
 		this.owner = owner;
+		this.shiftDown = false;
+		
+		Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
+			@Override
+			public void eventDispatched(AWTEvent e) {
+				FileSystemDropTarget.this.shiftDown = ((KeyEvent)e).isShiftDown();
+			}
+		}, AWTEvent.KEY_EVENT_MASK);
 	}
 	
 	@Override
@@ -26,7 +39,7 @@ public class FileSystemDropTarget implements DropTargetListener {
 				List<?> list = (List<?>)t.getTransferData(DataFlavor.javaFileListFlavor);
 				for (Object o : list) {
 					if (o instanceof File) {
-						owner.addFile((File)o);
+						owner.addFile((File)o, !shiftDown);
 					}
 				}
 				e.dropComplete(true);
@@ -35,7 +48,7 @@ public class FileSystemDropTarget implements DropTargetListener {
 				for (String l : s.split("\r\n|\r|\n")) {
 					l = l.trim();
 					if (l.length() > 0) {
-						owner.addFile(new File(l));
+						owner.addFile(new File(l), !shiftDown);
 					}
 				}
 				e.dropComplete(true);

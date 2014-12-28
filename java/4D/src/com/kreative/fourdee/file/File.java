@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import com.kreative.fourdee.common.IO;
 import com.kreative.fourdee.common.Numbers;
+import com.kreative.fourdee.common.Strings;
 
 public class File implements Comparable<File> {
 	private int cluster;
@@ -22,9 +23,12 @@ public class File implements Comparable<File> {
 		this.changed = false;
 	}
 	
-	public File(java.io.File file) throws IOException {
+	public File(java.io.File file, boolean stripExtension) throws IOException {
 		this.cluster = 0;
 		this.name = file.getName();
+		if (stripExtension) {
+			this.name = Strings.stripExtension(this.name);
+		}
 		this.active = true;
 		int length = Numbers.longToInt(file.length());
 		this.data = new byte[length];

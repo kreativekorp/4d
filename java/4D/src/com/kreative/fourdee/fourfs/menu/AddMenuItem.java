@@ -20,7 +20,8 @@ public class AddMenuItem extends JMenuItem {
 			public void actionPerformed(ActionEvent e) {
 				File file = Dialogs.openFile("Add File");
 				if (file == null) return;
-				table.addFile(file);
+				boolean stripExtension = ((e.getModifiers() & ActionEvent.SHIFT_MASK) == 0);
+				table.addFile(file, stripExtension);
 			}
 		});
 	}
