@@ -1,0 +1,24 @@
+'Blossomforth config file
+'Some images modified from Rainbow Dash images created by Jay Wright
+'Modified by and other images created by Pixel Coder (RebeccaRGB)
+
+'Cupcake config file
+'Images created by Pixel Coder (RebeccaRGB)
+
+'Dewdrop Dazzle config file
+'Images modified by others from http://www.hamalonesandwich.com/derpydelivery/#l,
+'Which stated they are under this license: http://creativecommons.org/licenses/by-sa/3.0/
+'better animations from Jay Wright
+'Recolor by Pixel Coder (RebeccaRGB)
+
+'Golden Gates config file
+'Some images modified from Rainbow Dash images created by Jay Wright
+'Modified by and other images created by Pixel Coder (RebeccaRGB)
+
+'Silver Span config file
+'Modified from Rumble images created by anonymous (most likely ultimately from Miles000 (Midnyte))
+'Created by Pixel Coder (RebeccaRGB)
+
+'Copper Chip config file
+'Modified from Sweetie Belle images created by Miles000 (Midnyte)
+'Created by Pixel Coder (RebeccaRGB)
