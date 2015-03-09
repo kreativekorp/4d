@@ -3,6 +3,8 @@ package com.kreative.fourdee.makegci;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
+import com.kreative.fourdee.common.ColorConstants;
+import com.kreative.fourdee.common.ColorUtilities;
 import com.kreative.fourdee.common.Strings;
 import com.kreative.fourdee.image.Image;
 import com.kreative.fourdee.image.ImageIO;
