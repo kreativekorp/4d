@@ -1,5 +1,7 @@
 package com.kreative.fourdee.common;
 
+import java.text.CharacterIterator;
+import java.text.StringCharacterIterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -8,6 +10,8 @@ public class ColorUtilities {
 	private static final String CL = "\\s*:\\s*";
 	private static final String OP = "\\s*\\(\\s*";
 	private static final String CP = "\\s*\\)\\s*";
+	private static final String OB = "\\s*\\[\\s*";
+	private static final String CB = "\\s*\\]\\s*";
 	private static final String INT = "([0-9]+)";
 	private static final String FP = "([0-9]+\\.[0-9]+)";
 	private static final String OX = "(0[Xx]|#|\\$)?";
@@ -28,6 +32,7 @@ public class ColorUtilities {
 	private static final Pattern CSS_COLOR_PATTERN_COLON = Pattern.compile("^"+CSS+CL+STR+"$");
 	private static final Pattern XKCD_COLOR_PATTERN_PAREN = Pattern.compile("^"+XKCD+OP+STR+CP+"$");
 	private static final Pattern XKCD_COLOR_PATTERN_COLON = Pattern.compile("^"+XKCD+CL+STR+"$");
+	private static final Pattern MIXED_COLOR_PATTERN = Pattern.compile("^"+OB+STR+CB+"$");
 	
 	public static int parseColor(String s, Integer def) {
 		s = s.replaceAll("\\s+", " ").trim();
@@ -83,7 +88,42 @@ public class ColorUtilities {
 		} else if ((m = XKCD_COLOR_PATTERN_PAREN.matcher(s)).matches()) {
 			return XKCDColor.parse(m.group(1));
 		} else if ((m = XKCD_COLOR_PATTERN_COLON.matcher(s)).matches()) {
-			return CSSColor.parse(m.group(1));
+			return XKCDColor.parse(m.group(1));
+		} else if ((m = MIXED_COLOR_PATTERN.matcher(s)).matches()) {
+			int a = 0, r = 0, g = 0, b = 0, ad = 0, cd = 0;
+			CharacterIterator ci = new StringCharacterIterator(m.group(1));
+			char ch = ci.first();
+			while (ch != CharacterIterator.DONE) {
+				if (Character.isLetter(ch)) {
+					String name = Character.toString(ch);
+					ch = ci.next();
+					int d = 0;
+					while (Character.isDigit(ch)) {
+						d = d * 10 + Character.getNumericValue(ch);
+						ch = ci.next();
+					}
+					if (d < 1) d = 1;
+					if (name.equalsIgnoreCase("t")) {
+						ad += d;
+					} else if (name.equalsIgnoreCase("q")) {
+						a += 255 * d;
+						ad += d;
+					} else {
+						int color = ColorConstants.parse(name);
+						a += ((color >> 24) & 0xFF) * d;
+						r += ((color >> 16) & 0xFF) * d;
+						g += ((color >>  8) & 0xFF) * d;
+						b += ((color >>  0) & 0xFF) * d;
+						ad += d;
+						cd += d;
+					}
+				} else {
+					ch = ci.next();
+				}
+			}
+			if (ad > 0) a /= ad;
+			if (cd > 0) { r /= cd; g /= cd; b /= cd; }
+			return (a << 24) | (r << 16) | (g << 8) | (b << 0);
 		} else {
 			int color = ColorConstants.parse(s);
 			if (color != 0) return color;
