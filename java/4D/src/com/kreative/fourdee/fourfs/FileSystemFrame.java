@@ -43,6 +43,7 @@ public class FileSystemFrame extends JFrame {
 					switch (sc.showDialog()) {
 					case SAVE: if (doSave()) dispose(); break;
 					case DONT_SAVE: dispose(); break;
+					default: break;
 					}
 				} else {
 					dispose();
