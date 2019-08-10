@@ -1,0 +1,403 @@
+00	Pips - 0
+01	Pips - 1
+02	Pips - 2
+03	Pips - 3
+04	Pips - 4
+05	Pips - 5
+06	Pips - 6
+07	Pips - 7
+08	Pips - 8
+09	Pips - 9
+10	Pips - 10
+11	Pips - 11
+12	Pips - 12
+13	Pips - 13
+14	Pips - 14
+15	Pips - 15
+16	Pips - 16
+17	Pips - 17
+18	Pips - 18
+19	Pips - 19
+20	Pips - 20
+21	Pips - 21
+22	Pips - 22
+23	Pips - 23
+24	Pips - 24
+25	Pips - 25
+A0	Pips - Black Large 1
+A1	Pips - Red Large 1
+A2	Pips - Vertical 2
+A3	Pips - Vertical 3
+A4	Pips - Red 4
+AA	Arrow - 0°
+AB	Arrow - 22.5°
+AC	Arrow - 30°
+AD	Arrow - 45°
+AE	Arrow - 60°
+AF	Arrow - 67.5°
+AG	Arrow - 90°
+AH	Arrow - 112.5°
+AI	Arrow - 120°
+AJ	Arrow - 135°
+AK	Arrow - 150°
+AL	Arrow - 157.5°
+AM	Arrow - 180°
+AN	Arrow - 202.5°
+AO	Arrow - 210°
+AP	Arrow - 225°
+AQ	Arrow - 240°
+AR	Arrow - 247.5°
+AS	Arrow - 270°
+AT	Arrow - 292.5°
+AU	Arrow - 300°
+AV	Arrow - 315°
+AW	Arrow - 330°
+AX	Arrow - 337.5°
+B0	Bamboo Suit
+B1	Bamboo - 1
+B2	Bamboo - 2
+B3	Bamboo - 3
+B4	Bamboo - 4
+B5	Bamboo - 5
+B6	Bamboo - 6
+B7	Bamboo - 7
+B8	Bamboo - 8
+B9	Bamboo - 9
+BA	8-Ball - Non-Committal 1
+BB	8-Ball - Non-Committal 2
+BC	8-Ball - Non-Committal 3
+BD	8-Ball - Non-Committal 4
+BE	8-Ball - Non-Committal 5
+BF	Boolean - Floating
+BI	8-Ball - Negative 1
+BJ	8-Ball - Negative 2
+BK	8-Ball - Negative 3
+BL	8-Ball - Negative 4
+BM	8-Ball - Negative 5
+BN	Boolean - No
+BP	Bowling Pin
+BQ	8-Ball - Affirmative 1
+BR	8-Ball - Affirmative 2
+BS	8-Ball - Affirmative 3
+BT	8-Ball - Affirmative 4
+BU	8-Ball - Affirmative 5
+BV	8-Ball - Affirmative 6
+BW	8-Ball - Affirmative 7
+BX	8-Ball - Affirmative 8
+BY	Boolean - Yes
+BZ	8-Ball - Affirmative 10
+C0	Character Suit
+C1	Character - 1
+C2	Character - 2
+C3	Character - 3
+C4	Character - 4
+C5	Character - 5
+C6	Character - 6
+C7	Character - 7
+C8	Character - 8
+C9	Character - 9
+CB	Color - Blue
+CC	Color - Cyan
+CG	Color - Green
+CK	Color - Black
+CM	Color - Magenta
+CN	Color - Brown
+CO	Color - Orange
+CR	Color - Red
+CV	Color - Violet
+CW	Color - White
+CX	Color - Gray
+CY	Color - Yellow
+D0	Dot Suit
+D1	Dot - 1
+D2	Dot - 2
+D3	Dot - 3
+D4	Dot - 4
+D5	Dot - 5
+D6	Dot - 6
+D7	Dot - 7
+D8	Dot - 8
+D9	Dot - 9
+DA	Direction - N
+DB	Direction - NNE
+DC	Direction - NE
+DD	Direction - ENE
+DE	Direction - E
+DF	Direction - ESE
+DG	Direction - SE
+DH	Direction - SSE
+DI	Direction - S
+DJ	Direction - SSW
+DK	Direction - SW
+DL	Direction - WSW
+DM	Direction - W
+DN	Direction - WNW
+DO	Direction - NW
+DP	Direction - NNW
+DQ	Digraph Qu
+DX	dX OED
+E0	Exponent - 10⁰ (1)
+E1	Exponent - 10¹ (10)
+E2	Exponent - 10² (100)
+E3	Exponent - 10³ (1,000)
+E4	Exponent - 10⁴ (10,000)
+E5	Exponent - 10⁵ (100,000)
+E6	Exponent - 10⁶ (1,000,000)
+E7	Exponent - 10⁷ (10,000,000)
+E8	Exponent - 10⁸ (100,000,000)
+E9	Exponent - 10⁹ (1,000,000,000)
+EA	Equation - Addition
+ED	Equation - Division
+EE	Equation - Euler Number
+EF	Equation - Fibonacci Number
+EG	Equation - Greater Than
+EH	Equation - Greater Than or Equal
+EI	Equation - Imaginary Unit
+EK	Equation - Less Than or Equal
+EL	Equation - Less Than
+EM	Equation - Multiplication
+EN	Equation - Not Equal
+EP	Equation - Pi
+EQ	Equation - Equal
+ER	Equation - Remainder
+ES	Equation - Subtraction
+EX	Equation - Exponentiation
+F0	Fruit Machine - Bell
+F1	Fruit Machine - Single Bar
+F2	Fruit Machine - Double Bar
+F3	Fruit Machine - Triple Bar
+F4	Fruit Machine - Clover
+F5	Fruit Machine - Diamond
+F6	Fruit Machine - Horseshoe
+F7	Fruit Machine - Single Lucky Seven
+F8	Fruit Machine - Double Lucky Seven
+F9	Fruit Machine - Triple Lucky Seven
+FA	Fruit Machine - Apple
+FB	Fruit Machine - Banana
+FC	Fruit Machine - Cherry
+FG	Fruit Machine - Grape
+FH	Flip - Heads
+FL	Fruit Machine - Lemon
+FM	Fruit Machine - Plum
+FN	Fudge - Negative
+FO	Fruit Machine - Orange
+FP	Fudge - Positive
+FR	Fruit Machine - Pear
+FS	Fruit Machine - Strawberry
+FT	Flip - Tails
+FW	Fruit Machine - Watermelon
+FZ	Fudge - Zero
+G0	Backgammon - 2⁰ (1)
+G1	Backgammon - 2¹ (2)
+G2	Backgammon - 2² (4)
+G3	Backgammon - 2³ (8)
+G4	Backgammon - 2⁴ (16)
+G5	Backgammon - 2⁵ (32)
+G6	Backgammon - 2⁶ (64)
+G7	Backgammon - 2⁷ (128)
+G8	Backgammon - 2⁸ (256)
+G9	Backgammon - 2⁹ (512)
+GA	Greek - Alpha
+GB	Greek - Beta
+GC	Greek - Chi
+GD	Greek - Delta
+GE	Greek - Epsilon
+GF	Greek - Phi
+GG	Greek - Gamma
+GH	Greek - Eta
+GI	Greek - Iota
+GJ	Greek - Ptolemaic Alpha
+GK	Greek - Kappa
+GL	Greek - Lambda
+GM	Greek - Mu
+GN	Greek - Nu
+GO	Greek - Omicron
+GP	Greek - Pi
+GQ	Greek - Theta
+GR	Greek - Rho
+GS	Greek - Sigma
+GT	Greek - Tau
+GU	Greek - Upsilon
+GV	Greek - Ptolemaic Sigma
+GW	Greek - Omega
+GX	Greek - Xi
+GY	Greek - Psi
+GZ	Greek - Zeta
+HA	Hebrew - Alef
+HB	Hebrew - Bet
+HC	Hebrew - Tsade
+HD	Hebrew - Dalet
+HE	Hebrew - He
+HG	Hebrew - Gimel
+HH	Hebrew - Het
+HI	Hebrew - Yod
+HJ	Hebrew - Yod Yod
+HK	Hebrew - Kaf
+HL	Hebrew - Lamed
+HM	Hebrew - Mem
+HN	Hebrew - Nun
+HO	Hebrew - Ayin
+HP	Hebrew - Pei
+HQ	Hebrew - Qof
+HR	Hebrew - Resh
+HS	Hebrew - Shin
+HT	Hebrew - Tav
+HU	Hebrew - Yod Vav
+HV	Hebrew - Vav
+HW	Hebrew - Vav Vav
+HX	Hebrew - Samech
+HY	Hebrew - Tet
+HZ	Hebrew - Zayin
+IA	I-Ching - Air/Wind
+IE	I-Ching - Earth/Ground
+IF	I-Ching - Fire
+IH	I-Ching - Heaven
+II	I-Ching - Yin
+IJ	I-Ching - Greater Yin
+IK	I-Ching - Lesser Yin
+IL	I-Ching - Lake
+IM	I-Ching - Mountain
+IT	I-Ching - Thunder
+IW	I-Ching - Water
+IX	I-Ching - Yang
+IY	I-Ching - Greater Yang
+IZ	I-Ching - Lesser Yang
+L0	Linear - 0
+L1	Linear - 1
+L2	Linear - 2
+L3	Linear - 3
+L4	Linear - 4
+L5	Linear - 5
+L6	Linear - 6
+L7	Linear - 7
+L8	Linear - 8
+L9	Linear - 9
+LA	Latin - A
+LB	Latin - B
+LC	Latin - C
+LD	Latin - D
+LE	Latin - E
+LF	Latin - F
+LG	Latin - G
+LH	Latin - H
+LI	Latin - I
+LJ	Latin - J
+LK	Latin - K
+LL	Latin - L
+LM	Latin - M
+LN	Latin - N
+LO	Latin - O
+LP	Latin - P
+LQ	Latin - Q
+LR	Latin - R
+LS	Latin - S
+LT	Latin - T
+LU	Latin - U
+LV	Latin - V
+LW	Latin - W
+LX	Latin - X
+LY	Latin - Y
+LZ	Latin - Z
+MB	Monopoly Bus
+MC	Mahjong - Red Dragon (Chung)
+ME	Mahjong - East
+MF	Mahjong - Green Dragon (Fa)
+MM	Mr. Monopoly
+MN	Mahjong - North
+MP	Mahjong - White Dragon (Pai)
+MS	Mahjong - South
+MW	Mahjong - West
+NA	Numeric - Analog
+ND	Numeric - Digital
+NP	Numeric - Pips
+P7	Poker - 7
+P8	Poker - 8
+P9	Poker - 9
+PA	Poker - Ace
+PJ	Poker - Jack
+PK	Poker - King
+PQ	Poker - Queen
+PX	Poker - 10
+R0	Roman - O (0)
+R1	Roman - I (1)
+R2	Roman - II (2)
+R3	Roman - III (3)
+R4	Roman - IV (4)
+R5	Roman - V (5)
+R6	Roman - VI (6)
+R7	Roman - VII (7)
+R8	Roman - VIII (8)
+R9	Roman - IX (9)
+RA	RPS - Airship
+RB	Rebecca Bettencourt
+RD	RPS - Dynamite
+RF	RPS - Fire
+RI	RPS - Pencil
+RL	RPS - Lizard
+RO	RPS - Well
+RP	RPS - Paper
+RR	RPS - Rock
+RS	RPS - Scissors
+RT	RPS - Tentacles
+RV	RPS - Spock
+RW	RPS - Water
+RX	Roman - X (10)
+RY	Roman - XI (11)
+RZ	Roman - XII (12)
+SA	Suit - Anchor
+SB	Chess - Bishop
+SC	Suit - Club
+SD	Suit - Diamond
+SH	Suit - Heart
+SK	Chess - King
+SN	Chess - Night
+SP	Chess - Pawn
+SQ	Chess - Queen
+SR	Chess - Rook
+SS	Suit - Spade
+W0	Weekday - Sunday
+W1	Weekday - Monday
+W2	Weekday - Tuesday
+W3	Weekday - Wednesday
+W4	Weekday - Thursday
+W5	Weekday - Friday
+W6	Weekday - Saturday
+WA	Month - January
+WB	Month - February
+WC	Month - March
+WD	Month - April
+WE	Month - May
+WF	Month - June
+WG	Month - July
+WH	Month - August
+WI	Month - September
+WJ	Month - October
+WK	Month - November
+WL	Month - December
+WM	Month - Undecimber
+ZA	Zodiac - Ascending Node
+ZB	Zodiac - Libra
+ZC	Zodiac - Cancer
+ZD	Zodiac - Descending Node
+ZE	Zodiac - Earth
+ZF	Zodiac - Pisces
+ZG	Zodiac - Gemini
+ZH	Zodiac - Saturn
+ZI	Zodiac - Sagittarius
+ZJ	Zodiac - Jupiter
+ZK	Zodiac - Capricorn
+ZL	Zodiac - Leo
+ZM	Zodiac - Moon
+ZN	Zodiac - Neptune
+ZO	Zodiac - Sun
+ZP	Zodiac - Pluto
+ZQ	Zodiac - Aquarius
+ZR	Zodiac - Aries
+ZS	Zodiac - Scorpio
+ZT	Zodiac - Taurus
+ZU	Zodiac - Uranus
+ZV	Zodiac - Virgo
+ZW	Zodiac - Venus
+ZX	Zodiac - Comet
+ZY	Zodiac - Mercury
+ZZ	Zodiac - Mars

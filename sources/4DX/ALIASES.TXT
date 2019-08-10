@@ -99,6 +99,7 @@ RPS05AT	RPS Airsp Tntcls
 RPS05SL	RPS Spock Lizard
 RPS05UPA	RPS UPA
 SCATTERG	Scattergories
+SLOTS	Slots
 SPINNER2	Spinner - 2
 SPINNER3	Spinner - 3
 SPINNER4	Spinner - 4
