@@ -355,6 +355,8 @@ SP	Chess - Pawn
 SQ	Chess - Queen
 SR	Chess - Rook
 SS	Suit - Spade
+TF	Anatomy - Foot
+TH	Anatomy - Hand
 W0	Weekday - Sunday
 W1	Weekday - Monday
 W2	Weekday - Tuesday

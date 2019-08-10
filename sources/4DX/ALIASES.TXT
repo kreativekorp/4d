@@ -46,6 +46,7 @@ CHESS	Chess
 COINFLIP	Coin Flip
 COLORRGB	Colors - RGB
 COLORRYB	Colors - RYB
+COLORS04	Colors - 4
 COLORS08	Colors - 8
 COLORS10	Colors - 10
 COLORS12	Colors - 12
@@ -58,12 +59,14 @@ CRN&ANCR	Crown & Anchor
 DREIDELA	Dreidel (Shin)
 DREIDELB	Dreidel (Pei)
 GREEK	Greek
+HEADFOOT	Head/Foot
 HEBREW	Hebrew
 HOTELS	Hotels
 ICHING2	I-Ching - 2
 ICHING4	I-Ching - 4
 ICHING8	I-Ching - 8
 LCR	LCR
+LEFTRGHT	Left/Right
 MAGIC8BL	Magic 8-Ball
 MAHJ2D6	Mahjong 2d6
 MAHJBAM	Mahjong Bams
@@ -107,6 +110,7 @@ SPINNER6	Spinner - 6
 SPINNER8	Spinner - 8
 SPINNR12	Spinner - 12
 SPINNR16	Spinner - 16
+TWISTER	Twister
 WEEKDAYS	Weekdays
 YAHTZEE	Yahtzee
 YESNO	Yes/No
