@@ -59,7 +59,7 @@ CRN&ANCR	Crown & Anchor
 DREIDELA	Dreidel (Shin)
 DREIDELB	Dreidel (Pei)
 GREEK	Greek
-HEADFOOT	Head/Foot
+HANDFOOT	Hand/Foot
 HEBREW	Hebrew
 HOTELS	Hotels
 ICHING2	I-Ching - 2
