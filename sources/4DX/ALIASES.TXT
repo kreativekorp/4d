@@ -65,6 +65,7 @@ HOTELS	Hotels
 ICHING2	I-Ching - 2
 ICHING4	I-Ching - 4
 ICHING8	I-Ching - 8
+ILLUMINA	Illuminati
 LCR	LCR
 LEFTRGHT	Left/Right
 MAGIC8BL	Magic 8-Ball

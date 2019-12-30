@@ -348,6 +348,7 @@ SA	Suit - Anchor
 SB	Chess - Bishop
 SC	Suit - Club
 SD	Suit - Diamond
+SE	All-Seeing Eye
 SH	Suit - Heart
 SK	Chess - King
 SN	Chess - Night
