@@ -17,11 +17,11 @@ public class GCIFrame extends JFrame {
 		setLayout(new BorderLayout());
 		gci = new GCIComponent(image);
 		add(gci, BorderLayout.CENTER);
+		setJMenuBar(new MenuBar(this));
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		pack();
 		setResizable(false);
 		setLocationRelativeTo(null);
-		setJMenuBar(new MenuBar(this));
-		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
